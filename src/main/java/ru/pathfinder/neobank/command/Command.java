@@ -1,16 +1,18 @@
 package ru.pathfinder.neobank.command;
 
-import ru.pathfinder.neobank.domain.Message;
+import ru.pathfinder.neobank.domain.MessageData;
 import ru.pathfinder.neobank.domain.Session;
 import ru.pathfinder.neobank.exception.CommandHandleException;
+
+import java.util.List;
 
 public interface Command {
 
     String getCommandPath();
 
-    Message execute(String message, Session session) throws CommandHandleException;
+    MessageData execute(String message, Session session) throws CommandHandleException;
 
-    Command getNextCommand();
+    List<Command> getNextCommands();
 
     boolean isRoot();
 

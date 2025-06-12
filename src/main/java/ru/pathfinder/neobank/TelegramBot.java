@@ -17,7 +17,7 @@ import ru.pathfinder.neobank.config.ApplicationConfig;
 import ru.pathfinder.neobank.converter.MessageConverter;
 import ru.pathfinder.neobank.converter.TelegramMessageConverter;
 import ru.pathfinder.neobank.domain.CommandData;
-import ru.pathfinder.neobank.domain.Message;
+import ru.pathfinder.neobank.domain.MessageData;
 import ru.pathfinder.neobank.domain.Session;
 import ru.pathfinder.neobank.service.CommandHandlingService;
 import ru.pathfinder.neobank.service.CommandRegistryService;
@@ -61,13 +61,13 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
         CommandData data = telegramMessageConverter.convert(update);
         Session session = sessionService.getSession(data.getUserId());
-        Message responseMessage = commandHandlingService.handleCommand(data, session);
-        sendMessage(data.getChatId(), responseMessage);
+        MessageData responseMessageData = commandHandlingService.handleCommand(data, session);
+        sendMessage(data.getChatId(), responseMessageData);
     }
 
     @Override
     public void onRegister() {
-        List<BotCommand> commands = commandRegistryService.getAllCommands().stream()
+        List<BotCommand> commands = commandRegistryService.getAllRootCommands().stream()
                 .map(c -> new BotCommand(c.getCommandPath(), c.getDescription()))
                 .collect(Collectors.toList());
         try {
@@ -87,11 +87,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         return applicationConfig.getTelegram().getToken();
     }
 
-    private void sendMessage(Long chatId, Message message) {
+    private void sendMessage(Long chatId, MessageData messageData) {
         SendMessage msg = SendMessage.builder().chatId(chatId)
-                .text(message.getText())
+                .text(messageData.getText())
                 .build();
-        createButtonsIfNeeded(msg, message);
+        createButtonsIfNeeded(msg, messageData);
         try {
             execute(msg);
         } catch (TelegramApiException e) {
@@ -99,15 +99,15 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private void createButtonsIfNeeded(SendMessage msg, Message message) {
-        if (!CollectionUtils.isEmpty(message.getActionsForSelection())) {
+    private void createButtonsIfNeeded(SendMessage msg, MessageData messageData) {
+        if (!CollectionUtils.isEmpty(messageData.getActionsForSelection())) {
             ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
             markup.setResizeKeyboard(true);
             markup.setOneTimeKeyboard(true);
-            markup.setKeyboard(createButtons(message.getActionsForSelection()));
+            markup.setKeyboard(createButtons(messageData.getActionsForSelection()));
             msg.setReplyMarkup(markup);
         } else {
-            if (!message.isHasException()) {
+            if (!messageData.isHasException()) {
                 ReplyKeyboardRemove removeKeyboard = new ReplyKeyboardRemove();
                 removeKeyboard.setRemoveKeyboard(true);
                 msg.setReplyMarkup(removeKeyboard);

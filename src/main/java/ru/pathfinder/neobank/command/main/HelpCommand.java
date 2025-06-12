@@ -1,13 +1,16 @@
-package ru.pathfinder.neobank.command;
+package ru.pathfinder.neobank.command.main;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.pathfinder.neobank.domain.Message;
+import ru.pathfinder.neobank.command.Command;
+import ru.pathfinder.neobank.domain.CommandPath;
+import ru.pathfinder.neobank.domain.MessageData;
 import ru.pathfinder.neobank.domain.Session;
 import ru.pathfinder.neobank.service.CommandRegistryService;
 
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,13 +25,13 @@ public class HelpCommand implements Command {
 
     @Override
     public String getCommandPath() {
-        return "/help";
+        return CommandPath.HELP;
     }
 
     @Override
-    public Message execute(String message, Session session) {
-        return Message.of(
-                commandRegistryService.getAllCommands().stream()
+    public MessageData execute(String message, Session session) {
+        return MessageData.of(
+                commandRegistryService.getAllRootCommands().stream()
                         .filter(Command::isRoot)
                         .map(this::formatCommand)
                         .collect(Collectors.joining("\n"))
@@ -36,8 +39,8 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public Command getNextCommand() {
-        return null;
+    public List<Command> getNextCommands() {
+        return Collections.emptyList();
     }
 
     @Override
