@@ -1,3 +1,14 @@
 spring:
   application:
     name: neobank
+
+app:
+  telegram:
+    id: 7863997218
+    chat-id: 1693263937
+    username: pathfinder
+    token: 7863997218:AAFl_FOAyCje-rPI4HY0KWO6NyEvn_PxsXs
+    chat-type: private
+  backend:
+    url: https://msa-bff-telegram-neobank.neoflex.ru/v1
+    token-hash: 1d81d4bf2dfd3ed535f008d9570c240cbfa3ba6d7ea9d42dca24f62f307cc784
