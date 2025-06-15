@@ -55,7 +55,7 @@ public class NewDepositCommand implements Command {
                 Выберите:
                 {0}
                 Введите сумму и срок:
-                /new_deposit 1 100000 12 (тип сумма срок_в_мес)
+                /new_deposit 1 100000 12 04050 (тип сумма срок_в_мес счет)
                 """, formatDeposits(deposits)));
     }
 
@@ -70,7 +70,7 @@ public class NewDepositCommand implements Command {
     private MessageData handleOpenNewDeposit(String message, Session session) throws CommandHandleException, NeobankException {
         String[] args = message.split(" ");
         if (args.length != 4) {
-            throw new CommandHandleException("Неверно введены параметры (Формат: 1 100000 12 (тип сумма срок_в_мес))");
+            throw new CommandHandleException("Неверно введены параметры (Формат: 1 100000 12 (тип сумма срок_в_мес  счет))");
         }
         ProductDepositResponse deposit = findDeposit(Integer.parseInt(args[0]), session.getAuthentication());
         AccountResponse account = neobankService.findAccount(args[3], session.getAuthentication());

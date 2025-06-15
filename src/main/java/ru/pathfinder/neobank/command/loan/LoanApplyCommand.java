@@ -53,7 +53,7 @@ public class LoanApplyCommand implements Command {
     private MessageData handleOpenCredit(String message, Session session) throws CommandHandleException, NeobankException {
         String[] args = message.split(" ");
         if (args.length != 3) {
-            throw new CommandHandleException("Неверно введены параметры (Формат: 100000 12 12341)");
+            throw new CommandHandleException("Неверно введены параметры (Формат: 100000 12 12341 04050)");
         }
         if (neobankService.getCurrentCredit(session.getAuthentication()) != null) {
             throw new CommandHandleException("У вас уже есть активный кредит. Новый кредит можно оформить\n" +

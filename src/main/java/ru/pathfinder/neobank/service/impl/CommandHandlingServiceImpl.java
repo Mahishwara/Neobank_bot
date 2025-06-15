@@ -46,7 +46,14 @@ public class CommandHandlingServiceImpl implements CommandHandlingService {
         } catch (CommandHandleException e) {
             return MessageData.ofException(e.getMessage());
         } catch (NeobankException e) {
-            return MessageData.ofException(e.getErrorResponse().errorDetail());
+            if (e.getErrorResponse().errorDetail() != null) {
+                return MessageData.ofException(e.getErrorResponse().errorDetail());
+            } else if (e.getErrorResponse().errorDetails() != null) {
+                return MessageData.of(
+                        String.join("\n", e.getErrorResponse().errorDetails())
+                );
+            }
+            return MessageData.of(e.getMessage());
         } catch (RuntimeException e) {
             return MessageData.ofException(String.format("Ошибка сервера: \"%s\"", e.getMessage()));
         }

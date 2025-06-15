@@ -27,8 +27,12 @@ public class HashGenerator {
         appendField(sb, "bot_username", telegramConfig.getUsername());
         appendField(sb, "chat_id", Long.toString(chatId));
         appendField(sb, "chat_type", telegramConfig.getChatType());
-        appendField(sb, "first_name", user.getFirstName());
-        appendField(sb, "last_name", user.getLastName());
+        if (user.getFirstName() != null) {
+            appendField(sb, "first_name", user.getFirstName());
+        }
+        if (user.getLastName() != null) {
+            appendField(sb, "last_name", user.getLastName());
+        }
         appendField(sb, "user_id", Long.toString(user.getId()));
         appendField(sb, "username", user.getUsername());
         return sb.toString();
