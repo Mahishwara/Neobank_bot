@@ -1,6 +1,7 @@
 package ru.pathfinder.neobank.service;
 
 import ru.pathfinder.neobank.domain.User;
+import ru.pathfinder.neobank.exception.NeobankException;
 import ru.pathfinder.neobank.security.Authentication;
 
 /**
@@ -14,7 +15,7 @@ public interface AuthenticationService {
      * @param chatId    идентификатор чата пользователя
      * @param user      пользователь
      */
-    Authentication getAuthentication(Long chatId, User user);
+    Authentication getAuthentication(Long chatId, User user) throws NeobankException;
 
     /**
      * Получить ссылку для авторизации пользователя

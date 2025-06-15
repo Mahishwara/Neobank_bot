@@ -43,7 +43,7 @@ public class CommandHandlingServiceImpl implements CommandHandlingService {
             MessageData result = doHandleCommandWithAuthorization(command, data, session);
             session.update(command);
             return result;
-        } catch (CommandHandleException e) {
+        } catch (CommandHandleException | RuntimeException e) {
             return MessageData.ofException(e.getMessage());
         } catch (NeobankException e) {
             return MessageData.ofException(e.getErrorResponse().errorDetail());
@@ -58,7 +58,7 @@ public class CommandHandlingServiceImpl implements CommandHandlingService {
         return command.execute(messageExtractor.extractMessage(data), session);
     }
 
-    private String authorizeIfNeeded(Command command, CommandData data, Session session) {
+    private String authorizeIfNeeded(Command command, CommandData data, Session session) throws NeobankException {
         if (command.requiresAuthorization() && session.isUnauthorized()) {
             Long chatId = Long.parseLong(applicationConfig.getTelegram().getChatId());
             Authentication authentication = authenticationService.getAuthentication(chatId, data.getUser());

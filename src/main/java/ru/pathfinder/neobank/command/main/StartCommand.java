@@ -1,5 +1,6 @@
 package ru.pathfinder.neobank.command.main;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import ru.pathfinder.neobank.command.Command;
 import ru.pathfinder.neobank.constant.CommandPath;
@@ -8,6 +9,7 @@ import ru.pathfinder.neobank.domain.MessageData;
 import ru.pathfinder.neobank.domain.Session;
 
 @Component
+@Order(1)
 public class StartCommand implements Command {
 
     @Override

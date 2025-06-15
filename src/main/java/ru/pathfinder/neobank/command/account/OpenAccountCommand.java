@@ -50,16 +50,22 @@ public class OpenAccountCommand implements Command {
     private MessageData handleMessage(String message, Authentication authentication) throws CommandHandleException, NeobankException {
         Map<String, Currency> currencies = neobankService.getCurrencies(authentication);
         String currencyCode = switch (message) {
-            case "1" -> currencies.get("643").currencyNumber();
+            case "1" -> "643";
             case "2" -> currencies.get("840").currencyNumber();
             case "3" -> currencies.get("978").currencyNumber();
+            default -> throw new CommandHandleException(Messages.NO_SUCH_ANSWER_EXCEPTION);
+        };
+        String currencyName = switch (message) {
+            case "1" -> "RUB";
+            case "2" -> currencies.get("840").currencyName();
+            case "3" -> currencies.get("978").currencyName();
             default -> throw new CommandHandleException(Messages.NO_SUCH_ANSWER_EXCEPTION);
         };
         AccountResponse response = neobankService.openAccount(
                 new OpenAccountRequest(Integer.parseInt(currencyCode), 0), authentication
         );
         return MessageData.of(MessageFormat.format(
-                Messages.COMMAND_OPEN_ACCOUNT_SUCCESS, response.accountNumber(), Messages.NOT_SPECIFIED
+                Messages.COMMAND_OPEN_ACCOUNT_SUCCESS, currencyName, response.accountNumber(), Messages.NOT_SPECIFIED
         ));
     }
 

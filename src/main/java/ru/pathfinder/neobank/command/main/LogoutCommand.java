@@ -24,7 +24,7 @@ public class LogoutCommand implements Command {
     @Override
     public MessageData execute(String message, Session session) throws CommandHandleException {
         if (session.getCurrentCommand() == null) {
-            return MessageData.of(Messages.COMMAND_LOGOUT_CONFIRM_QUESTION, Messages.YES, Messages.NO);
+            return MessageData.of(Messages.COMMAND_LOGOUT_CONFIRM_QUESTION, Messages.QUIT, Messages.CANCEL);
         }
         return handleMessage(message, session);
     }
@@ -40,11 +40,11 @@ public class LogoutCommand implements Command {
     }
 
     private MessageData handleMessage(String message, Session session) throws CommandHandleException {
-        if (message.equals(Messages.YES)) {
+        if (message.equals(Messages.QUIT)) {
             session.notifyToClear();
             sessionService.removeSession(session);
             return MessageData.of(Messages.COMMAND_LOGOUT_CONFIRM_YES);
-        } else if (message.equals(Messages.NO)) {
+        } else if (message.equals(Messages.CANCEL)) {
             return MessageData.of(Messages.COMMAND_LOGOUT_CONFIRM_NO);
         }
         throw new CommandHandleException(Messages.NO_SUCH_ANSWER_EXCEPTION);

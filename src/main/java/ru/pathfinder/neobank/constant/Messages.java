@@ -16,6 +16,7 @@ public final class Messages {
     public static final String CLOSE = "Закрыть";
     public static final String CANCEL = "Отменить";
     public static final String NOT_SPECIFIED = "Не указано";
+    public static final String QUIT = "Выйти";
 
     // Сообщения исключений
     public static final String DEFAULT_MESSAGE_COMMAND_HANDLE_EXCEPTION = "Ошибка обработки команды";
@@ -69,17 +70,17 @@ public final class Messages {
 
     // Сообщения команды OPEN_ACCOUNT
     public static final String COMMAND_OPEN_ACCOUNT_INFO = """
-                        Счет в USD открыт!
-                        Номер: •{0}
-                        Реквизиты для пополнения: {1}
-                        Комиссия списывается сразу после открытия:
-                        USD: 1%
-                        EUR: 1.5%
+                        Открытие счета:
+                        Выберите валюту:
+                        1. RUB (Рубли) – без комиссии
+                        2. USD (Доллары) – комиссия 1%
+                        3. EUR (Евро) – комиссия 1.5%
+                        Введите номер варианта (1-3):
                         """;
     public static final String COMMAND_OPEN_ACCOUNT_SUCCESS = """
-                        Счет в USD открыт!
-                        Номер: •{0}
-                        Реквизиты для пополнения: {1}
+                        Счет в {0} открыт!
+                        Номер: •{1}
+                        Реквизиты для пополнения: {2}
                         Комиссия списывается сразу после открытия:
                         USD: 1%
                         EUR: 1.5%

@@ -96,7 +96,7 @@ public class BalanceCommand implements Command {
 
     private String getCurrencyCode(Map<String, Currency> currencies, AccountResponse account) {
         Currency currency = currencies.get(Integer.toString(account.currencyNumber()));
-        return currency == null ? Messages.NOT_SPECIFIED : currency.currencyCode();
+        return currency == null ? "RUB" : currency.currencyCode();
     }
 
 }

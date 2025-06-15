@@ -7,6 +7,7 @@ import ru.pathfinder.neobank.constant.CommandPath;
 import ru.pathfinder.neobank.constant.Messages;
 import ru.pathfinder.neobank.domain.MessageData;
 import ru.pathfinder.neobank.domain.Session;
+import ru.pathfinder.neobank.exception.CommandHandleException;
 import ru.pathfinder.neobank.service.CommandRegistryService;
 
 import java.text.MessageFormat;
@@ -24,12 +25,11 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public MessageData execute(String message, Session session) {
-        return MessageData.of(
-                commandRegistryService.getAllCommands().stream()
-                        .map(this::formatCommand)
-                        .collect(Collectors.joining("\n"))
-        );
+    public MessageData execute(String message, Session session) throws CommandHandleException {
+        if (message == null) {
+            return handleMessage();
+        }
+        return handleCommandReference(message);
     }
 
     @Override
@@ -44,6 +44,22 @@ public class HelpCommand implements Command {
 
     private String formatCommand(Command c) {
         return MessageFormat.format("{0} - {1}", c.getCommandPath(), c.getDescription());
+    }
+
+    private MessageData handleMessage() {
+        return MessageData.of(
+                commandRegistryService.getAllCommands().stream()
+                        .map(this::formatCommand)
+                        .collect(Collectors.joining("\n"))
+        );
+    }
+
+    private MessageData handleCommandReference(String message) throws CommandHandleException {
+        Command command = commandRegistryService.getCommand(message);
+        if (command == null) {
+            throw new CommandHandleException("Команда не найдена. Введите команду в формате");
+        }
+        return MessageData.of(command.getDescription());
     }
 
 }
