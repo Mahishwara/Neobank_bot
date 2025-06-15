@@ -1,5 +1,7 @@
 package ru.pathfinder.neobank.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -45,9 +47,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(String.class)
                 .block());
     }
@@ -78,7 +94,28 @@ public class RemoteNeobankService implements NeobankService {
                 .uri("/transfers")
                 .header("Authorization", "Bearer " + authentication.token())
                 .bodyValue(request)
-                .retrieve());
+                .retrieve()
+                .onStatus(
+                        status -> status.is4xxClientError() || status.is5xxServerError(),
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
+                .bodyToMono(Object.class)
+                .block());
     }
 
     @Override
@@ -91,9 +128,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(HistoryResponse.class)
                 .block());
     }
@@ -107,9 +158,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(new ParameterizedTypeReference<List<AccountResponse>>() {})
                 .block());
     }
@@ -132,9 +197,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(AccountResponse.class)
                 .block());
     }
@@ -149,9 +228,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(AccountResponse.class)
                 .block());
     }
@@ -169,9 +262,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(ProductInfoResponse.class)
                 .block());
         if (productsResponse == null || productsResponse.products() == null) {
@@ -190,9 +297,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(CreditResponse.class)
                 .block());
     }
@@ -208,9 +329,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(CurrentCreditResponse.class)
                 .block());
         return resp == null || resp.credit() == null ? null : resp.credit().getFirst();
@@ -225,9 +360,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(PaymentPlanResponse.class)
                 .block());
     }
@@ -242,9 +391,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(Object.class)
                 .block());
 
@@ -262,9 +425,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(ProductInfoResponse.class)
                 .block());
         if (productsResponse == null || productsResponse.products() == null) {
@@ -280,7 +457,28 @@ public class RemoteNeobankService implements NeobankService {
                 .uri("/deposit")
                 .header("Authorization", "Bearer " + authentication.token())
                 .bodyValue(request)
-                .retrieve());
+                .retrieve()
+                .onStatus(
+                        status -> status.is4xxClientError() || status.is5xxServerError(),
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
+                .bodyToMono(Object.class)
+                .block());
     }
 
     @Override
@@ -293,9 +491,23 @@ public class RemoteNeobankService implements NeobankService {
                 .retrieve()
                 .onStatus(
                         status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response
-                                .bodyToMono(ErrorResponse.class)
-                                .flatMap(error -> Mono.error(new ServiceException(error))))
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
                 .bodyToMono(DepositsResponse.class)
                 .block());
         if (res == null || res.deposit() == null || res.deposit().isEmpty()) {
@@ -308,10 +520,31 @@ public class RemoteNeobankService implements NeobankService {
     public void closeDeposit(CloseDepositRequest request, Authentication authentication) throws NeobankException {
         doCall(() -> remoteNeobankProvider.getWebClient()
                 .put()
-                .uri("/close-deposit")
+                .uri("/deposit/close-deposit")
                 .header("Authorization", "Bearer " + authentication.token())
                 .bodyValue(request)
-                .retrieve());
+                .retrieve()
+                .onStatus(
+                        status -> status.is4xxClientError() || status.is5xxServerError(),
+                        response -> response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .flatMap(body -> {
+                                    try {
+                                        ErrorResponse error = new ObjectMapper().readValue(body, ErrorResponse.class);
+                                        return Mono.error(new ServiceException(error));
+                                    } catch (Exception e1) {
+                                        try {
+                                            ErrorResponse2 error2 = new ObjectMapper().readValue(body, ErrorResponse2.class);
+                                            ErrorResponse error = new ErrorResponse(error2.errorTitle(), String.join("\n", error2.errorDetails()));
+                                            return Mono.error(new ServiceException(error));
+                                        } catch (JsonProcessingException e) {
+                                            return Mono.error(new RuntimeException(e));
+                                        }
+                                    }
+                                })
+                )
+                .bodyToMono(Object.class)
+                .block());
     }
 
     private <T> T doCall(Supplier<T> remoteAction) throws NeobankException {

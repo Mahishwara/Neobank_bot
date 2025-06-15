@@ -1,6 +1,6 @@
 package ru.pathfinder.neobank.domain.dto.response;
 
-public record ErrorResponse(
+public record ErrorResponse2(
         String errorTitle,
-        String errorDetail
+        String[] errorDetails
 ) {}

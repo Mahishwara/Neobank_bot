@@ -93,7 +93,7 @@ public class Session {
     /**
      * Очистить сессию
      */
-    private void clear() {
+    public void clear() {
         currentCommand = null;
         authentication = null;
         context.clear();

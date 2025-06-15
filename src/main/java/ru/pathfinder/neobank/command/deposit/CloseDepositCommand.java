@@ -54,8 +54,8 @@ public class CloseDepositCommand implements Command {
                         Досрочное закрытие:
                         Ваш вклад №{0}:
                         ▸ Сумма: {1} ₽
-                        ▸ Потери: {2} ₽
-                    """, deposit.depositNumber(), deposit.startAmount(), deposit.startAmount()
+                        ▸ Потери: 0 ₽
+                    """, deposit.depositNumber(), deposit.startAmount()
         ), Messages.CLOSE, Messages.CANCEL);
     }
 

@@ -72,13 +72,13 @@ public class NewDepositCommand implements Command {
         if (args.length != 4) {
             throw new CommandHandleException("Неверно введены параметры (Формат: 1 100000 12 (тип сумма срок_в_мес  счет))");
         }
-        ProductDepositResponse deposit = findDeposit(Integer.parseInt(args[0]), session.getAuthentication());
+        ProductDepositResponse deposit = findDeposit(Integer.parseInt(args[0]) - 1, session.getAuthentication());
         AccountResponse account = neobankService.findAccount(args[3], session.getAuthentication());
         if (account == null) {
             throw new CommandHandleException("Не найден счет");
         }
         OpenDepositRequest request = new OpenDepositRequest(
-            account.id().toString(), Integer.parseInt(args[1]), 0.1, deposit.id(),
+            account.id().toString(), Integer.parseInt(args[1]), 1, deposit.id(),
                 deposit.currencyNumber(), Integer.parseInt(args[2]), true
         );
         neobankService.openDeposit(request, session.getAuthentication());

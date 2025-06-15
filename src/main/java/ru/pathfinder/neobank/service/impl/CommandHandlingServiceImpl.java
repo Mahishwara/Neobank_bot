@@ -46,14 +46,7 @@ public class CommandHandlingServiceImpl implements CommandHandlingService {
         } catch (CommandHandleException e) {
             return MessageData.ofException(e.getMessage());
         } catch (NeobankException e) {
-            if (e.getErrorResponse().errorDetail() != null) {
-                return MessageData.ofException(e.getErrorResponse().errorDetail());
-            } else if (e.getErrorResponse().errorDetails() != null) {
-                return MessageData.of(
-                        String.join("\n", e.getErrorResponse().errorDetails())
-                );
-            }
-            return MessageData.of(e.getMessage());
+            return MessageData.ofException(e.getErrorResponse().errorDetail());
         } catch (RuntimeException e) {
             return MessageData.ofException(String.format("Ошибка сервера: \"%s\"", e.getMessage()));
         }
@@ -82,6 +75,7 @@ public class CommandHandlingServiceImpl implements CommandHandlingService {
     private Command extractCommand(CommandData data, Session session) {
         Command command = commandRegistryService.getCommand(messageExtractor.getCommandPath(data));
         if (command != null) {
+            session.clear();
             session.setCurrentCommand(null);
             return command;
         }
