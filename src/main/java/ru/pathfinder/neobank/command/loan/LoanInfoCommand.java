@@ -88,7 +88,7 @@ public class LoanInfoCommand implements Command {
         return MessageData.of(MessageFormat.format("""
                 Кредит №{0}:
                 ▸ Остаток: {1}
-                ▸ Следующий платеж: 5 500 (25.06) ₽
+                ▸ Следующий платеж: 5 500 ₽ (25.06)
                 ▸ Просрочка: Нет
                 """, credit.creditNumber(), credit.amount()), Messages.COMMAND_LOAN_INFO_EARLY_REPAYMENT, Messages.COMMAND_LOAN_INFO_SCHEDULE_PAYMENT);
     }

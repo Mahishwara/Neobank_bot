@@ -43,10 +43,12 @@ public class CommandHandlingServiceImpl implements CommandHandlingService {
             MessageData result = doHandleCommandWithAuthorization(command, data, session);
             session.update(command);
             return result;
-        } catch (CommandHandleException | RuntimeException e) {
+        } catch (CommandHandleException e) {
             return MessageData.ofException(e.getMessage());
         } catch (NeobankException e) {
             return MessageData.ofException(e.getErrorResponse().errorDetail());
+        } catch (RuntimeException e) {
+            return MessageData.ofException(String.format("Ошибка сервера: \"%s\"", e.getMessage()));
         }
     }
 

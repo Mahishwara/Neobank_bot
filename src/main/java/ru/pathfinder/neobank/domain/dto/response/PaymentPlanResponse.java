@@ -6,7 +6,7 @@ public record PaymentPlanResponse(
         String clientId,
         String accountId,
         String creditNumber,
-        long amount,
+        double amount,
         String startCreditDate,  // dd-MM-yyyy
         String endCreditDate,    // dd-MM-yyyy
         long rate,
