@@ -1,16 +1,28 @@
 package ru.pathfinder.neobank.command.account;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.pathfinder.neobank.constant.Messages;
 import ru.pathfinder.neobank.command.Command;
-import ru.pathfinder.neobank.domain.CommandPath;
+import ru.pathfinder.neobank.constant.CommandPath;
+import ru.pathfinder.neobank.domain.Currency;
 import ru.pathfinder.neobank.domain.MessageData;
 import ru.pathfinder.neobank.domain.Session;
+import ru.pathfinder.neobank.domain.dto.response.AccountResponse;
+import ru.pathfinder.neobank.domain.dto.request.OpenAccountRequest;
 import ru.pathfinder.neobank.exception.CommandHandleException;
+import ru.pathfinder.neobank.exception.NeobankException;
+import ru.pathfinder.neobank.security.Authentication;
+import ru.pathfinder.neobank.service.NeobankService;
 
-import java.util.List;
+import java.text.MessageFormat;
+import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class OpenAccountCommand implements Command {
+
+    private final NeobankService neobankService;
 
     @Override
     public String getCommandPath() {
@@ -18,49 +30,37 @@ public class OpenAccountCommand implements Command {
     }
 
     @Override
-    public MessageData execute(String message, Session session) throws CommandHandleException {
+    public MessageData execute(String message, Session session) throws CommandHandleException, NeobankException {
         if (session.getCurrentCommand() == null) {
-            return MessageData.of(getInfoMessage());
+            return MessageData.of(Messages.COMMAND_OPEN_ACCOUNT_INFO);
         }
-        return handleMessage(message);
-    }
-
-    @Override
-    public List<Command> getNextCommands() {
-        return List.of();
-    }
-
-    @Override
-    public boolean isRoot() {
-        return true;
+        return handleMessage(message, session.getAuthentication());
     }
 
     @Override
     public String getDescription() {
-        return "Открыть новый дебетовый счет (рублевый/валютный)";
+        return Messages.COMMAND_DESCRIPTION_OPEN_ACCOUNT;
     }
 
     @Override
     public boolean requiresAuthorization() {
-        return false;
+        return true;
     }
 
-    private MessageData handleMessage(String message) {
-        return switch (message) {
-            case "1":
-
-        }
-    }
-
-    private String getInfoMessage() {
-        return """
-                Открытие счета:
-                Выберите валюту:
-                \t1. RUB (Рубли) – без комиссии
-                \t2. USD (Доллары) – комиссия 1%
-                \t3. EUR (Евро) – комиссия 1.5%
-                Введите номер варианта (1-3):
-                """;
+    private MessageData handleMessage(String message, Authentication authentication) throws CommandHandleException, NeobankException {
+        Map<String, Currency> currencies = neobankService.getCurrencies(authentication);
+        String currencyCode = switch (message) {
+            case "1" -> currencies.get("643").currencyNumber();
+            case "2" -> currencies.get("840").currencyNumber();
+            case "3" -> currencies.get("978").currencyNumber();
+            default -> throw new CommandHandleException(Messages.NO_SUCH_ANSWER_EXCEPTION);
+        };
+        AccountResponse response = neobankService.openAccount(
+                new OpenAccountRequest(Integer.parseInt(currencyCode), 0), authentication
+        );
+        return MessageData.of(MessageFormat.format(
+                Messages.COMMAND_OPEN_ACCOUNT_SUCCESS, response.accountNumber(), Messages.NOT_SPECIFIED
+        ));
     }
 
 }

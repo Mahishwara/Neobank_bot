@@ -1,22 +1,18 @@
 package ru.pathfinder.neobank.security;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.pathfinder.neobank.config.ApplicationConfig;
 import ru.pathfinder.neobank.domain.User;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class HashGenerator {
 
     private final ApplicationConfig applicationConfig;
-
-    @Autowired
-    public HashGenerator(ApplicationConfig applicationConfig) {
-        this.applicationConfig = applicationConfig;
-    }
 
     public String generate(Long chatId, User user) {
         String secretKey = applicationConfig.getBackend().getTokenHash();

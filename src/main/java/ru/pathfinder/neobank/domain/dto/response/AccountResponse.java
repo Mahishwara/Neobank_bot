@@ -1,6 +1,5 @@
-package ru.pathfinder.neobank.domain.dto;
+package ru.pathfinder.neobank.domain.dto.response;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 public record AccountResponse(
@@ -9,7 +8,7 @@ public record AccountResponse(
         UUID clientId,
         long amount,
         long availableAmount,
-        LocalDate startDate,
+        String startDate,
         String accountType,
         String accountStatus,
         int currencyNumber,

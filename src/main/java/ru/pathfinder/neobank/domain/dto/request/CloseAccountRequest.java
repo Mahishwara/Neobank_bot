@@ -1,4 +1,4 @@
-package ru.pathfinder.neobank.domain.dto;
+package ru.pathfinder.neobank.domain.dto.request;
 
 public record CloseAccountRequest(
         String accountId,

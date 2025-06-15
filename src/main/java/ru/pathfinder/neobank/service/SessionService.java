@@ -15,10 +15,10 @@ public interface SessionService {
     Session getSession(Long userId);
 
     /**
-     * Очистить сессию
+     * Удалить сессию
      *
      * @param session сессия
      */
-    void clearSession(Session session);
+    void removeSession(Session session);
 
 }

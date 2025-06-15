@@ -14,7 +14,7 @@ public interface CommandRegistryService {
     /**
      * @return список всех корневых команд
      */
-    Collection<Command> getAllRootCommands();
+    Collection<Command> getAllCommands();
 
     /**
      * Получить команду
@@ -25,10 +25,16 @@ public interface CommandRegistryService {
     Command getCommand(String commandPath);
 
     /**
+     * Имеется ли команда
+     *
+     * @param commandPath путь команды
+     */
+    boolean hasCommand(String commandPath);
+
+    /**
      * Зарегистрировать команды
      *
      * @param commands список команд
      */
     void registerCommands(List<Command> commands);
-
 }

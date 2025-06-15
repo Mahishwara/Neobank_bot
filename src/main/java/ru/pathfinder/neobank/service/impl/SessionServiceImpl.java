@@ -18,8 +18,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public void clearSession(Session session) {
-        session.clear();
+    public void removeSession(Session session) {
         sessions.remove(session.getUserId());
     }
 

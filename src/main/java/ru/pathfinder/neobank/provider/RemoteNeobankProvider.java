@@ -1,19 +1,15 @@
 package ru.pathfinder.neobank.provider;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.pathfinder.neobank.config.ApplicationConfig;
 
 @Component
+@RequiredArgsConstructor
 public class RemoteNeobankProvider implements WebClientProvider {
 
     private final ApplicationConfig applicationConfig;
-
-    @Autowired
-    public RemoteNeobankProvider(ApplicationConfig applicationConfig) {
-        this.applicationConfig = applicationConfig;
-    }
 
     @Override
     public WebClient getWebClient() {

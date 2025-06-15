@@ -1,7 +1,7 @@
 package ru.pathfinder.neobank.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.pathfinder.neobank.command.Command;
@@ -10,15 +10,15 @@ import ru.pathfinder.neobank.domain.CommandData;
 import ru.pathfinder.neobank.domain.MessageData;
 import ru.pathfinder.neobank.domain.Session;
 import ru.pathfinder.neobank.exception.CommandHandleException;
+import ru.pathfinder.neobank.exception.NeobankException;
 import ru.pathfinder.neobank.security.Authentication;
 import ru.pathfinder.neobank.service.AuthenticationService;
 import ru.pathfinder.neobank.service.CommandHandlingService;
 import ru.pathfinder.neobank.service.CommandRegistryService;
 
-import java.util.function.Function;
-
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CommandHandlingServiceImpl implements CommandHandlingService {
 
     private final AuthenticationService authenticationService;
@@ -29,47 +29,28 @@ public class CommandHandlingServiceImpl implements CommandHandlingService {
 
     private final MessageExtractor messageExtractor;
 
-    @Autowired
-    public CommandHandlingServiceImpl(CommandRegistryService commandRegistryService,
-                                      AuthenticationService authenticationService,
-                                      MessageExtractor messageExtractor,
-                                      ApplicationConfig applicationConfig) {
-        this.commandRegistryService = commandRegistryService;
-        this.authenticationService = authenticationService;
-        this.messageExtractor = messageExtractor;
-        this.applicationConfig = applicationConfig;
-    }
-
     @Override
     public MessageData handleCommand(CommandData data, Session session) {
         Command command = extractCommand(data, session);
-        return session.hasCurrentCommand()
-                ? handleNextCommand(command, data, session)
-                : handleRootCommand(command, data, session);
+        return handleCommand(command, data, session);
     }
 
-    private MessageData handleRootCommand(Command command, CommandData data, Session session) {
-        return handleCommand(command, data, session, c -> c);
-    }
-
-    private MessageData handleNextCommand(Command command, CommandData data, Session session) {
-        return handleCommand(command, data, session, c -> c);
-    }
-
-    private MessageData handleCommand(Command command, CommandData data, Session session, Function<Command, Command> nextCommandExtractor) {
+    private MessageData handleCommand(Command command, CommandData data, Session session) {
         if (command == null) {
             return MessageData.of("Неизвестная команда");
         }
         try {
             MessageData result = doHandleCommandWithAuthorization(command, data, session);
-            session.setCurrentCommand(nextCommandExtractor.apply(command));
+            session.update(command);
             return result;
         } catch (CommandHandleException e) {
             return MessageData.ofException(e.getMessage());
+        } catch (NeobankException e) {
+            return MessageData.ofException(e.getErrorResponse().errorDetail());
         }
     }
 
-    private MessageData doHandleCommandWithAuthorization(Command command, CommandData data, Session session) throws CommandHandleException {
+    private MessageData doHandleCommandWithAuthorization(Command command, CommandData data, Session session) throws CommandHandleException, NeobankException {
         String authResponse = authorizeIfNeeded(command, data, session);
         if (authResponse != null) {
             return MessageData.of(authResponse);
@@ -99,17 +80,30 @@ public class CommandHandlingServiceImpl implements CommandHandlingService {
     }
 
     @Component
+    @RequiredArgsConstructor
     public static class MessageExtractor {
 
         private static final String MESSAGE_SEPARATOR = " ";
+
+        private final CommandRegistryService commandRegistryService;
 
         public String getCommandPath(CommandData data) {
             return data.getMessage().split(MESSAGE_SEPARATOR)[0];
         }
 
         public String extractMessage(CommandData data) {
-            String[] textBlocks = data.getMessage().split(MESSAGE_SEPARATOR);
-            return textBlocks.length > 1 ? textBlocks[1] : null;
+            String text = data.getMessage();
+            String[] textBlocks = text.split(MESSAGE_SEPARATOR, 2);
+            if (textBlocks.length == 1) {
+                if (commandRegistryService.hasCommand(textBlocks[0])) {
+                    return null;
+                }
+                return text;
+            }
+            if (commandRegistryService.hasCommand(textBlocks[0])) {
+                return textBlocks[1];
+            }
+            return text;
         }
 
     }

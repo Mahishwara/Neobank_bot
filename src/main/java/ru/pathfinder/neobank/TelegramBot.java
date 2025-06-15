@@ -1,7 +1,8 @@
 package ru.pathfinder.neobank;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class TelegramBot extends TelegramLongPollingBot {
 
     private final SessionService sessionService;
@@ -40,19 +42,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final MessageConverter<Update> telegramMessageConverter;
 
     private final ApplicationConfig applicationConfig;
-
-    @Autowired
-    public TelegramBot(SessionService sessionService,
-                       CommandHandlingService commandHandlingService,
-                       CommandRegistryService commandRegistryService,
-                       TelegramMessageConverter telegramMessageConverter,
-                       ApplicationConfig applicationConfig) {
-        this.commandHandlingService = commandHandlingService;
-        this.commandRegistryService = commandRegistryService;
-        this.sessionService = sessionService;
-        this.telegramMessageConverter = telegramMessageConverter;
-        this.applicationConfig = applicationConfig;
-    }
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -67,7 +56,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onRegister() {
-        List<BotCommand> commands = commandRegistryService.getAllRootCommands().stream()
+        List<BotCommand> commands = commandRegistryService.getAllCommands().stream()
                 .map(c -> new BotCommand(c.getCommandPath(), c.getDescription()))
                 .collect(Collectors.toList());
         try {
@@ -87,7 +76,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         return applicationConfig.getTelegram().getToken();
     }
 
-    private void sendMessage(Long chatId, MessageData messageData) {
+    private void sendMessage(Long chatId, @NonNull MessageData messageData) {
         SendMessage msg = SendMessage.builder().chatId(chatId)
                 .text(messageData.getText())
                 .build();

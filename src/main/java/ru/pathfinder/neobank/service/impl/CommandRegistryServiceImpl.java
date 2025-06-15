@@ -17,13 +17,18 @@ public class CommandRegistryServiceImpl implements CommandRegistryService {
     private final Map<String, Command> commandRegistry = new HashMap<>();
 
     @Override
-    public Collection<Command> getAllRootCommands() {
-        return commandRegistry.values().stream().filter(Command::isRoot).collect(Collectors.toList());
+    public Collection<Command> getAllCommands() {
+        return commandRegistry.values();
     }
 
     @Override
     public Command getCommand(String commandPath) {
         return commandRegistry.get(commandPath);
+    }
+
+    @Override
+    public boolean hasCommand(String commandPath) {
+        return commandRegistry.containsKey(commandPath);
     }
 
     @Override
