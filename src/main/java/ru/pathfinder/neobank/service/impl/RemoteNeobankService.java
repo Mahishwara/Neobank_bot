@@ -90,7 +90,7 @@ public class RemoteNeobankService implements NeobankService {
     @Override
     public void transfer(TransferRequest request, Authentication authentication) throws NeobankException {
         doCall(() -> remoteNeobankProvider.getWebClient()
-                .put()
+                .post()
                 .uri("/transfers")
                 .header("Authorization", "Bearer " + authentication.token())
                 .bodyValue(request)
@@ -289,7 +289,7 @@ public class RemoteNeobankService implements NeobankService {
 
     @Override
     public CreditResponse openCredit(OpenCreditRequest request, Authentication authentication) throws NeobankException {
-        return doCall(() -> remoteNeobankProvider.getWebClient()
+            return doCall(() -> remoteNeobankProvider.getWebClient()
                 .post()
                 .uri("/credit")
                 .header("Authorization", "Bearer " + authentication.token())

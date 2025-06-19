@@ -1,8 +1,8 @@
 package ru.pathfinder.neobank.domain.dto.request;
 
 public record TransferRequest(
-        String from,
-        String to,
+        String fromAccountId,
+        String toAccountId,
         long amount,
         String message) {
 }

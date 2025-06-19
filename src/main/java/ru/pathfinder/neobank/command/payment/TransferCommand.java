@@ -34,15 +34,28 @@ public class TransferCommand implements Command {
         if (message == null) {
             throw new CommandHandleException(EX_MESSAGE);
         }
-        String[] args = message.split(" ");
-        if (args.length != 4) {
+        String[] args_in = message.split(" ");
+        String[] args = new String[4];
+        if (args_in.length < 4) {
             throw new CommandHandleException(EX_MESSAGE);
         }
-        AccountResponse account = neobankService.findAccount(args[3], session.getAuthentication());
-        if (account == null) {
-            throw new CommandHandleException("Счет не найден");
+        args[0] = args_in[0];
+        args[1] = args_in[1];
+        args[2] = args_in[2];
+        StringBuilder remainingString = new StringBuilder();
+        for (int i = 2; i < args_in.length; i++) {
+            if (i > 2) { // добавляем пробелы между словами начиная с третьего слова
+                remainingString.append(' ');
+            }
+            remainingString.append(args_in[i]);
         }
-        TransferRequest request = new TransferRequest(account.id().toString(), args[0], Long.parseLong(args[1]), args[2]);
+        args[3] = remainingString.toString();
+        AccountResponse account_from = neobankService.findAccount(args[0], session.getAuthentication());
+        AccountResponse account_to = neobankService.findAccount(args[1], session.getAuthentication());
+        if ((account_from == null) && (account_to == null)) {
+            throw new CommandHandleException("Счет получателя или отправителя не найден");
+        }
+        TransferRequest request = new TransferRequest(account_from.id().toString(), account_to.id().toString(), Long.parseLong(args[2]), args[3]);
         neobankService.transfer(request, session.getAuthentication());
         session.notifyToClear();
         return MessageData.of("Перевод выполнен");

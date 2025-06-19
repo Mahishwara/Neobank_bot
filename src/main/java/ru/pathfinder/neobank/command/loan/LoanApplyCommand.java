@@ -59,7 +59,7 @@ public class LoanApplyCommand implements Command {
             throw new CommandHandleException("Неверно введены параметры (Формат: 100000 12 12341)");
         }
         if (neobankService.getCurrentCredit(session.getAuthentication()) != null) {
-            throw new CommandHandleException("У вас уже есть активный кредит. Новый кредит можно оформить\n" +
+            throw new CommandHandleException("У вас уже есть активный кредит. Новый кредит можно оформить " +
                     "только после полного погашения текущего");
         }
         ProductCreditResponse credit = (ProductCreditResponse) session.getContext().get(PRODUCT_CREDIT_INFO_KEY);
@@ -68,7 +68,7 @@ public class LoanApplyCommand implements Command {
             throw new CommandHandleException(Messages.ACCOUNT_NOT_FOUND_EXCEPTION);
         }
         OpenCreditRequest request = new OpenCreditRequest(
-            Long.parseLong(args[0]), 10, Integer.parseInt(args[1]), credit.currencyNumber(), credit.id(), account.id().toString()
+            Long.parseLong(args[0]), 15, Integer.parseInt(args[1]), credit.currencyNumber(), credit.id(), account.id().toString()
         );
         neobankService.openCredit(request, session.getAuthentication());
         session.notifyToClear();

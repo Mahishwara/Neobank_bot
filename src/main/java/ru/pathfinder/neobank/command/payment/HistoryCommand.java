@@ -81,5 +81,4 @@ public class HistoryCommand implements Command {
         HistoryRequest request = new HistoryRequest(accountId, type, fromDate, toDate);
         return neobankService.getHistory(request, authentication);
     }
-
 }
